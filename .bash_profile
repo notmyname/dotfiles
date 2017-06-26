@@ -56,7 +56,7 @@ PURPLE="\[\033[35m\]"
 BLUE="\[\033[34m\]"
 OFF="\[\033[00m\]"
 
-GIT_REGEX='^## ([0-9A-Za-z/]+)(\.{3}([0-9A-Za-z/]+)( \[(ahead ([0-9]+)(, )?)?(behind ([0-9]+))?\])?)?(.*\?\? [0-9A-Za-z/]+)?'
+GIT_REGEX='^## ([0-9A-Za-z/]+)(\.{3}([0-9A-Za-z/]+)( \[(ahead ([0-9]+)(, )?)?(behind ([0-9]+))?\])?)?(.*\?\? [.0-9A-Za-z/]+)?(.* M [.0-9A-Za-z/]+)?'
 
 function parse_git_branch {
     current_branch_stats=`git status --porcelain -b 2>/dev/null`
@@ -81,15 +81,19 @@ function parse_git_branch {
         if [[ ${num_behind} != '' ]]; then
             behind=" ${down_arrow}${num_behind}"
         fi
-        untracked="${BASH_REMATCH[10]}"
+        if `[[ "${BASH_REMATCH[10]}" != "" ]]` || `[[ "${BASH_REMATCH[11]}" != "" ]]`; then
+            untracked=true
+        else
+            untracked=false
+        fi
         if [[ ${ahead} != "" ]] || [[ ${behind} != "" ]]; then
-            if [[ ${untracked} != "" ]]; then
+            if [[ ${untracked} == true ]]; then
                 echo "${BOLD}${ORANGE}(${current_branch_name}${ahead}${behind})${OFF}"
             else
                 echo "${ORANGE}(${current_branch_name}${ahead}${behind})${OFF}"
             fi
         else
-            if [[ ${untracked} != "" ]]; then
+            if [[ ${untracked} == true ]]; then
                 echo "${BOLD}${PURPLE}(${current_branch_name}${ahead}${behind})${OFF}"
             else
                 echo "${PURPLE}(${current_branch_name}${ahead}${behind})${OFF}"
