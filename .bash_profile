@@ -86,18 +86,10 @@ function parse_git_branch {
         else
             untracked=false
         fi
-        if [[ ${ahead} != "" ]] || [[ ${behind} != "" ]]; then
-            if [[ ${untracked} == true ]]; then
-                echo "${BOLD}${ORANGE}(${current_branch_name}${ahead}${behind})${OFF}"
-            else
-                echo "${ORANGE}(${current_branch_name}${ahead}${behind})${OFF}"
-            fi
+        if [[ ${untracked} == true ]]; then
+            echo "${BOLD}${ORANGE}(${current_branch_name}${ahead}${behind})${OFF}"
         else
-            if [[ ${untracked} == true ]]; then
-                echo "${BOLD}${PURPLE}(${current_branch_name}${ahead}${behind})${OFF}"
-            else
-                echo "${PURPLE}(${current_branch_name}${ahead}${behind})${OFF}"
-            fi
+            echo "${PURPLE}(${current_branch_name}${ahead}${behind})${OFF}"
         fi
     else
         return 0
