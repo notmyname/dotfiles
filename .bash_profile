@@ -81,15 +81,28 @@ function parse_git_branch {
         if [[ ${num_behind} != '' ]]; then
             behind=" ${down_arrow}${num_behind}"
         fi
-        if `[[ "${BASH_REMATCH[10]}" != "" ]]` || `[[ "${BASH_REMATCH[11]}" != "" ]]`; then
+        if [[ "${BASH_REMATCH[10]}" != "" ]]; then
             untracked=true
         else
             untracked=false
         fi
-        if [[ ${untracked} == true ]]; then
-            echo "${BOLD}${ORANGE}(${current_branch_name}${ahead}${behind})${OFF}"
+        if [[ "${BASH_REMATCH[11]}" != "" ]]; then
+            modified=true
         else
-            echo "${PURPLE}(${current_branch_name}${ahead}${behind})${OFF}"
+            modified=false
+        fi
+        if [[ ${untracked} == true ]]; then
+            if [[ ${modified} == true ]]; then
+                echo "${BOLD}${ORANGE}(${current_branch_name}${ahead}${behind})${OFF}"
+            else
+                echo "${BOLD}${PURPLE}(${current_branch_name}${ahead}${behind})${OFF}"
+            fi
+        else
+            if [[ ${modified} == true ]]; then
+                echo "${ORANGE}(${current_branch_name}${ahead}${behind})${OFF}"
+            else
+                echo "${PURPLE}(${current_branch_name}${ahead}${behind})${OFF}"
+            fi
         fi
     else
         return 0
