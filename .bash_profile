@@ -13,6 +13,13 @@ function rd {
     rsync --progress -a --delete --exclude go/bin --exclude=.tox --exclude=*egg-info --exclude=*egg --exclude=*eggs --exclude=.testrepository --exclude=*__pycache__* ./ swift@saio:$BN/
 }
 
+# to saio VM
+function rd_cf {
+    BN=`basename $PWD`
+    echo "rsyncing $PWD to saio VM ($BN)"
+    rsync --progress -a --delete --exclude go/bin --exclude=.tox --exclude=*egg-info --exclude=*egg --exclude=*eggs --exclude=.testrepository --exclude=*__pycache__* ./ ubuntu@saio:$BN/
+}
+
 function rd_old {
     BN=`basename $PWD`
     exclude='--exclude=.git'
@@ -56,7 +63,7 @@ PURPLE="\[\033[35m\]"
 BLUE="\[\033[34m\]"
 OFF="\[\033[00m\]"
 
-GIT_REGEX='^## ([0-9A-Za-z/]+)(\.{3}([0-9A-Za-z/]+)( \[(ahead ([0-9]+)(, )?)?(behind ([0-9]+))?\])?)?(.*\?\? [.0-9A-Za-z/]+)?(.* M [.0-9A-Za-z/]+)?'
+GIT_REGEX='^## ([0-9A-Za-z/_-]+)(\.{3}([0-9A-Za-z/]+)( \[(ahead ([0-9]+)(, )?)?(behind ([0-9]+))?\])?)?(.*\?\? [.0-9A-Za-z/]+)?(.* M [.0-9A-Za-z/]+)?'
 
 function parse_git_branch {
     current_branch_stats=`git status --porcelain -b 2>/dev/null`
