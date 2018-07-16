@@ -35,22 +35,25 @@ function rd_old {
 # to dev workstation
 function rdev {
     BN=`basename $PWD`
-    exclude='--exclude=.git'
-    excludemsg='(excluding .git)'
-    if [[ $1 = "--with-git" ]]; then
-        exclude=''
-        excludemsg='(including .git)'
-    fi
+    # exclude='--exclude=.git'
+    # excludemsg='(excluding .git)'
+    # if [[ $1 = "--with-git" ]]; then
+    #     exclude=''
+    #     excludemsg='(including .git)'
+    # fi
     echo "rsyncing $PWD to dev box ($BN) $excludemsg"
-    rsync --progress -a --delete --exclude guest_workspaces --exclude go/bin $exclude --exclude=.tox --exclude=*egg-info --exclude=*egg --exclude=*eggs --exclude=.testrepository --exclude=*__pycache__* ./ john@dev:$BN/
+    rsync --progress -a --delete --exclude guest_workspaces $exclude --exclude=.tox --exclude=*egg-info --exclude=*egg --exclude=*eggs --exclude=.testrepository --exclude=*__pycache__* ./ john@dev:$BN/
 }
 
 
+# docs on colors: https://gist.github.com/thomd/7667642
 export LESS="-XFEr"
 export CLICOLOR=1
-export LSCOLORS=ExFxCxDxBxegedabagacad
-export PATH=~/bin:/Library/Frameworks/Python.framework/Versions/2.6/bin:/usr/local/bin:/usr/local/git/bin:$PATH
-export EDITOR="/usr/local/bin/subl -nw"
+export LSCOLORS=ExFxCxDxBxegadabagacad
+export PATH=~/bin:/usr/local/bin:/usr/local/opt/python/libexec/bin:/Library/Frameworks/Python.framework/Versions/2.6/bin:/usr/local/git/bin:$PATH
+# export PATH="/usr/local/opt/python/libexec/bin:$PATH"
+export PATH="/usr/local/sbin:$PATH"
+export EDITOR="/Users/john/bin/subl -nw"
 
 
 BOLD="\[\033[1m\]"
@@ -154,3 +157,14 @@ export HOMEBREW_NO_ANALYTICS=1
 
 export GOROOT=/usr/local/opt/go
 export PATH=$PATH:$GOROOT/bin
+
+
+
+# `swift` auth options for saio
+export ST_AUTH="http://192.168.56.2:8080/auth/v1.0"
+export ST_USER="test:tester"
+export ST_KEY="testing"
+
+
+# bash completion (installed via brew)
+[ -f /usr/local/etc/bash_completion ] && . /usr/local/etc/bash_completion
