@@ -9,15 +9,17 @@ alias whatchanged="git diff --name-only master | grep -v test | xargs git diff m
 # to saio VM
 function rd {
     BN=`basename $PWD`
-    echo "rsyncing $PWD to saio VM ($BN)"
-    rsync --progress -a --delete --exclude go/bin --exclude=.tox --exclude=*egg-info --exclude=*egg --exclude=*eggs --exclude=.testrepository --exclude=*__pycache__* ./ swift@saio:$BN/
-}
-
-# to saio VM
-function rd_cf {
-    BN=`basename $PWD`
-    echo "rsyncing $PWD to saio VM ($BN)"
-    rsync --progress -a --delete --exclude go/bin --exclude=.tox --exclude=*egg-info --exclude=*egg --exclude=*eggs --exclude=.testrepository --exclude=*__pycache__* ./ ubuntu@saio:$BN/
+    echo "rsyncing $PWD to saio ($BN)"
+    rsync --progress -a --delete   \
+        --exclude go/bin           \
+        --exclude guest_workspaces \
+        --exclude=.tox             \
+        --exclude=*egg-info        \
+        --exclude=*egg             \
+        --exclude=*eggs            \
+        --exclude=.testrepository  \
+        --exclude=*__pycache__*    \
+        ./ swift@saio:$BN/
 }
 
 function rd_old {
@@ -35,14 +37,17 @@ function rd_old {
 # to dev workstation
 function rdev {
     BN=`basename $PWD`
-    # exclude='--exclude=.git'
-    # excludemsg='(excluding .git)'
-    # if [[ $1 = "--with-git" ]]; then
-    #     exclude=''
-    #     excludemsg='(including .git)'
-    # fi
-    echo "rsyncing $PWD to dev box ($BN) $excludemsg"
-    rsync --progress -a --delete --exclude guest_workspaces $exclude --exclude=.tox --exclude=*egg-info --exclude=*egg --exclude=*eggs --exclude=.testrepository --exclude=*__pycache__* ./ john@dev:$BN/
+    echo "rsyncing $PWD to dev box ($BN)"
+    rsync --progress -a --delete   \
+        --exclude go/bin           \
+        --exclude guest_workspaces \
+        --exclude=.tox             \
+        --exclude=*egg-info        \
+        --exclude=*egg             \
+        --exclude=*eggs            \
+        --exclude=.testrepository  \
+        --exclude=*__pycache__*    \
+        ./ john@dev:$BN/
 }
 
 
@@ -57,16 +62,29 @@ export EDITOR="/Users/john/bin/subl -nw"
 
 
 BOLD="\[\033[1m\]"
-GREEN_BG="\[\033[42m\]"
-RED_BG="\[\033[41m\]"
+NORMAL="\[\033[0m\]"
+
+BLACK="\[\033[30m\]"
 RED="\[\033[31m\]"
-ORANGE="\[\033[33m\]"
 GREEN="\[\033[32m\]"
-PURPLE="\[\033[35m\]"
+ORANGE="\[\033[33m\]"
 BLUE="\[\033[34m\]"
+PURPLE="\[\033[35m\]"
+CYAN="\[\033[36m\]"
+WHITE="\[\033[37m\]"
+
+BLACK_BG="\[\033[40m\]"
+RED_BG="\[\033[41m\]"
+GREEN_BG="\[\033[42m\]"
+ORANGE_BG="\[\033[43m\]"
+BLUE_BG="\[\033[44m\]"
+PURPLE_BG="\[\033[45m\]"
+CYAN_BG="\[\033[46m\]"
+WHITE_BG="\[\033[47m\]"
+
 OFF="\[\033[00m\]"
 
-GIT_REGEX='^## ([0-9A-Za-z/_-]+)(\.{3}([0-9A-Za-z/]+)( \[(ahead ([0-9]+)(, )?)?(behind ([0-9]+))?\])?)?(.*\?\? [.0-9A-Za-z/]+)?(.* M [.0-9A-Za-z/]+)?'
+GIT_REGEX='^## ([0-9A-Za-z/_-]+)(\.{3}([0-9A-Za-z/]+)( \[(ahead ([0-9]+)(, )?)?(behind ([0-9]+))?\])?)?(.* M [.0-9A-Za-z/]+)?(.*\?\? [.0-9A-Za-z/]+)?'
 
 function parse_git_branch {
     current_branch_stats=`git status --porcelain -b 2>/dev/null`
@@ -92,26 +110,26 @@ function parse_git_branch {
             behind=" ${down_arrow}${num_behind}"
         fi
         if [[ "${BASH_REMATCH[10]}" != "" ]]; then
-            untracked=true
-        else
-            untracked=false
-        fi
-        if [[ "${BASH_REMATCH[11]}" != "" ]]; then
             modified=true
         else
             modified=false
         fi
+        if [[ "${BASH_REMATCH[11]}" != "" ]]; then
+            untracked=true
+        else
+            untracked=false
+        fi
         if [[ ${untracked} == true ]]; then
             if [[ ${modified} == true ]]; then
-                echo "${BOLD}${ORANGE}(${current_branch_name}${ahead}${behind})${OFF}"
+                echo "${BOLD}${RED}(${current_branch_name}${ahead}${behind})${OFF}"
             else
-                echo "${BOLD}${PURPLE}(${current_branch_name}${ahead}${behind})${OFF}"
+                echo "${BOLD}${WHITE}(${current_branch_name}${ahead}${behind})${OFF}"
             fi
         else
             if [[ ${modified} == true ]]; then
-                echo "${ORANGE}(${current_branch_name}${ahead}${behind})${OFF}"
+                echo "${NORMAL}${RED}(${current_branch_name}${ahead}${behind})${OFF}"
             else
-                echo "${PURPLE}(${current_branch_name}${ahead}${behind})${OFF}"
+                echo "${NORMAL}${GREEN}(${current_branch_name}${ahead}${behind})${OFF}"
             fi
         fi
     else
